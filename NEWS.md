@@ -1,9 +1,34 @@
 
 <!-- NEWS.md is generated from NEWS.Rmd. Please edit NEWS.Rmd file -->
 
+# R2BEAT 2.0
+
+Modified the parameters of the following functions:
+
+1.  prepareInputToAllocation2
+
+1.1. samp_frame –\> frame
+
+1.2. RGcal is now optional, default=NULL
+
+1.3. strata_var –\> stratum
+
+1.4. target_vars –\> target
+
+1.5. deff_var –\> deff_level
+
+1.6 domain_var –\> domain
+
+2.  beat.2st:
+
+2.1. stratif –\> file_strata
+
 # R2BEAT 1.0.6
 
 ## Major changes
+
+- Increased the performance of the function
+  ‘prepareInputToAllocation_beat.1st’
 
 - Added the function ‘build_dummy_variables’, to derive dummy variables
   from the target variables: it is useful when it is necessary to
