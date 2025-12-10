@@ -1,4 +1,4 @@
-#' Compute multivariate optimal allocation for different domains in one-stage stratified sample design
+#' Compute multivariate optimal allocation for different domains in one stage stratified sample design
 #'
 #' @description 
 #' This function computes the multivariate optimal allocation for different domains 
@@ -7,78 +7,38 @@
 #' @usage
 #' beat.1st(file_strata, errors, var_label=NULL, minnumstrat = 2, maxiter = 200, maxiter1 = 25, epsilon = 1e-11)
 #'
-#' @param file_strata: dataframe of survey strata, for more details see, e.g.,\code{\link{strata}}. 
-#' @param errors: dataframe of expected coefficients of variation (CV) for each domain, for more details see, e.g.,\code{\link{errors}}.
+#' @param file_strata: Data frame of survey strata, for more details see, e.g.,\code{\link{strata}}. 
+#' @param errors: Data frame of expected coefficients of variation (CV) for each domain, for more details see, e.g.,\code{\link{errors}}.
 #' @param var_label: a vector listing the target variable(s) which are used for leading the optimal allocation.
 #' @param minnumstrat: Minimum number of elementary units per strata (default=2).
 #' @param maxiter: Maximum number of iterations (default=200) of the general procedure. This kind of iteration may be required by the fact that when in a stratum the number of allocated units is greater or equal to its population, that stratum is set as "census stratum", and the whole procedure is re-initialised.
 #' @param maxiter1: Maximum number of iterations in Chromy algorithm (default=25).
 #' @param epsilon: Tollerance for the maximum absolute differences between the expected CV and the realised CV with the allocation obtained in the last iteraction for all domains. The default is 10^(-11).
-#' 
-#' @return 
-#' It returns a list with the following objects: 
-#' 
-#' - a dataframe, *file_strata*, with the strata information that is one of the inputs for performing the multivariate and multidomain optimal allocation implemented in the function *beat.1st* in R2BEAT R-package; 
-#' 
-#' - a vector, *var_label*, listing the target variable(s) which will be used for leading the optimal allocation.
-#'
-#' @details
+#' @return It returns a list with the following objects: a dataframe, *file_strata*, with the strata information that is one of the inputs for performing the multivariate and multidomain optimal allocation implemented in the function *beat.1st* in R2BEAT R-package; a vector, *var_label*, listing the target variable(s) which will be used for leading the optimal allocation.
+#' #' @details
 #' The methodology is a generalization of Bethel multivariate allocation (1989) that extends 
 #' the Neyman (1959) - Tchuprov (1923) allocation for multi-purpose and multi-domain surveys. 
 #' The generalized Bethel’s algorithm allows to determine the optimal sample size for each stratum 
 #' in a stratified sample design. The overall sample size and the allocation among the different strata 
 #' is determined starting from the accuracy constraints imposed in the survey on interest estimates.
 #'
-#' @return
+#' @value
 #' Returns a list with four components:
-#' - n: Vector with the optimal sample size for each stratum 
-#'  
-#' - file_strata: dataframe corresponding to the input data.frame file_strata with the optimal sample size column added 
-#' 
-#' - alloc: dataframe with optimal (OPT), proportional (PROP), and equal (UNIF) saple size allocation. 
-#' 
-#' - sensitivity: dataframe with the planned coefficients of variation (PlannedCV), the expected coefficients of variation (ExpectedCV), and the sensitivity at 10% for each variable and each domain category. Sensitivity provides an indication of sample size variation for a 10% change in planned CVs.
-#'  
-#' - expectedCV: dataframe with the maximum of the expected coefficients of variation (Expected CV), for each variable in each domain. 
-#' 
-#' - plannedCV: dataframe with the maximum coefficients of variation admissible for each domain and for each variable. It is the input, error, provided by the user.
-#' 
-#' - param_alloc: a vector summarising all the parameters used for performing the optimal allocation.
+#' \item{n}{Vector with the optimal sample size for each stratum.}
+#' \item{file_strata}{Data frame corresponding to the input data.frame file_strata with the 
+#'                   optimal sample size column added.}
+#' \item{alloc}{Data frame with optimal (ALLOC), proportional (PROP), and equal (EQUAL) 
+#'              sample size allocation.}
+#' \item{sensitivity}{Data frame with the planned coefficients of variation (PlannedCV), 
+#'                    the expected coefficients of variation (ExpectedCV), and the sensitivity at 10% 
+#'                    for each variable and each domain category. Sensitivity provides an indication of 
+#'                    sample size variation for a 10% change in planned CVs.}
+#' \item{expectedCV}{Data frame with the maximum of the expected coefficients of variation (Expected CV), 
+#'                   for each variable in each domain.}
+#' \item{plannedCV}{Data frame with the maximum coefficients of variation admissible for each domain and for each variable.
+#'                   It is the input, error, provided by the user.}
+#' \item{param_alloc}{A vector summarising all the parameters used for performing the optimal allocation.}
 #'
-#' @examples
-#' # Load example data
-#'data(beat.example)
-
-## Example 1
-# Allocate the sample
-#'allocation_1 <- beat.1st(file_strata=strata, errors=errors)
-# The total sample size is
-#'sum(allocation_1$n)
-
-## Example 2
-# Assume 5700 units is the maximum sample size to stick to our budget.
-# Looking at allocation_1$sensitivity we can see that most of the 
-# sensitivity is in DOM1 for REG1 and REG2 due to V1.
-#'allocation_1$sensitivity
-# We can relax the constraints increasing the expected coefficients of variation for X1 by 10%
-#'errors1 <- errors 
-#'errors1[1,2] <- errors[1,2]+errors[1,2]*0.1
-# Try the new allocation 
-#'allocation_2 <- beat.1st(file_strata=strata, errors=errors1)
-#'sum(allocation_2$n)
-
-## Example 3
-# On the contrary, if we tighten the constraints decreasing the expected coefficients of variation 
-# for X1 by 10%
-#'errors2 <- errors 
-#'errors2[1,2] <- errors[1,2]-errors[1,2]*0.1
-# The new allocation leads to a larger sample than the first example 
-#'allocation_3 <- beat.1st(file_strata=strata, errors=errors2)
-#'sum(allocation_3$n)
-
-#' @export
-
-
 beat.1st <- function (file_strata, errors, var_label=NULL, minnumstrat = 2, maxiter = 200, maxiter1 = 25, 
           epsilon = 10^(-11)) 
 {
@@ -243,6 +203,7 @@ beat.1st <- function (file_strata, errors, var_label=NULL, minnumstrat = 2, maxi
     varfin <- rowSums(t((s * N)^2 * (1 - round(n)/N)/round(n))/NTOT^2)
     totm <- rowSums(t(m * N))
     CVfin <- round(sqrt(varfin/(totm/NTOT)^2), digits = 4)
+    #CVfin <- sqrt(varfin/(totm/NTOT)^2)
     return(CVfin)
   }
   CVfin <- calcola_cv()
@@ -293,6 +254,8 @@ beat.1st <- function (file_strata, errors, var_label=NULL, minnumstrat = 2, maxi
           direction = "wide",
           idvar = "Type",
           timevar = "Var")
+  colnames(exp_cv)[-1] = sub("ExpectedCV.V", "", colnames(exp_cv)[-1])
+  exp_cv = exp_cv[,c(1, order(as.numeric(colnames(exp_cv)[-1]))+1)]
   colnames(exp_cv) <- colnames(errors)
   # output
   out <- list(n = n, file_strata = Bethel_sample, 
