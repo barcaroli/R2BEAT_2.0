@@ -471,11 +471,11 @@ tot2 <- tot[-nrow(tot),]
 Finally, we analyze the changes in the expected CVs:
 
 ```{r , warning=FALSE}
-a <- beat.1cv(stratif=strata,errors=cv_equal,alloc=equal$alloc$OPT)
-b <- beat.1cv(strata,cv_mod2,intermediate2$alloc$OPT)
-c <- beat.1cv(strata,cv_final2,final$alloc$OPT)
+a <- beat.1cv(stratif=strata,alloc=equal$alloc$OPT)
+b <- beat.1cv(strata,intermediate2$alloc$OPT)
+c <- beat.1cv(strata,final$alloc$OPT)
 row.names(a) <- NULL
-tot <- cbind(a[,c(1,2,4)],b[,4],c[,4])
+tot <- cbind(a$expectedCV[,c(1,2,4)],b$expectedCV[,4],c$expectedCV[,4])
 colnames(tot)[3:5] <- c("Initial(1)","Intermediate(2)","Final(3)")
 tot$Diff1 <- tot$`Intermediate(2)`- tot$`Initial(1)`
 tot$Diff2 <- tot$`Final(3)`- tot$`Intermediate(2)`
@@ -503,9 +503,12 @@ We can calculate the same indicators by weighting with the populations in the do
 dom1 <- aggregate(strata$N,by=list(strata$DOM1),FUN=sum)
 dom2 <- aggregate(strata$N,by=list(strata$DOM2),FUN=sum)
 dom3 <- aggregate(strata$N,by=list(strata$DOM3),FUN=sum)
-tot1 <- merge(tot,dom1,by.x="DOMAIN",by.y="Group.1")
-tot2 <- merge(tot,dom2,by.x="DOMAIN",by.y="Group.1")
-tot3 <- merge(tot,dom3,by.x="DOMAIN",by.y="Group.1")
+dom1$Group.1 <- "DOM1"
+dom2$Group.1 <- "DOM2"
+dom3$Group.1 <- "DOM3"
+tot1 <- merge(tot,dom1,by.x="DOM",by.y="Group.1")
+tot2 <- merge(tot,dom2,by.x="DOM",by.y="Group.1")
+tot3 <- merge(tot,dom3,by.x="DOM",by.y="Group.1")
 tottot <- rbind(tot1,tot2,tot3)
 
 AvgInitial <- sum(tottot$`Initial(1)` * tottot$x) / sum(tottot$x)
